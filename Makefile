@@ -4,7 +4,10 @@ VELLVM_SRC := vellvm/src
 
 # Vellvm modules to build, relative to $(VELLVM_SRC). Add e.g. rocq/Semantics.vo
 # here before importing Vellvm.Semantics.
-VELLVM_TARGETS := rocq/Syntax.vo
+VELLVM_TARGETS := rocq/Syntax.vo \
+                  rocq/Semantics.vo \
+                  rocq/Semantics/Implementations/ParamsV.vo \
+                  rocq/Semantics/Implementations/IPtrInfinite.vo
 
 .PHONY: all vellvm clean
 
