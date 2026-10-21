@@ -2,3 +2,4 @@
 -Q src FpyCert
 
 src/syntax.v
+src/Typing.v

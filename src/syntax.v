@@ -12,9 +12,11 @@ Open Scope string_scope.
 
 
 Definition int_syntax := Number.signed_int.
+Definition float_syntax := Decimal.decimal.
 
 Inductive expr : Set :=
 | IntLiteral (x:int_syntax)
+| FloatLiteral (x:float_syntax)
 | Plus (v1:expr) (v2:expr)
 .
 
@@ -22,7 +24,7 @@ Variant fpye_event : Type -> Type :=
 | Overflow : fpye_event void.
 
 
-Fixpoint denote_expr (e:expr) : itree fpye_event Z :=
+(* Fixpoint denote_expr (e:expr) : itree fpye_event Z :=
     match e with
     | IntLiteral x => Ret (Z.of_num_int x)
     | Plus lhs rhs =>
@@ -116,4 +118,4 @@ Definition prog_result : MCFGbot (Res dvalue) :=
 Compute result_value (run 1000 prog_result).
 
 
-
+ *)
