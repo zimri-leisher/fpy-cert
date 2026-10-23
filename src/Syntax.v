@@ -10,21 +10,22 @@ Open Scope string_scope.
 
 #[local] Instance Pa : Params := @ParamsV IPZ IPZTheory.
 
-
 Definition int_syntax := Number.signed_int.
-Definition float_syntax := Decimal.decimal.
 
 Inductive expr : Set :=
 | IntLiteral (x:int_syntax)
-| FloatLiteral (x:float_syntax)
 | Plus (v1:expr) (v2:expr)
 .
 
 Variant fpye_event : Type -> Type :=
 | Overflow : fpye_event void.
 
+Definition lit (z : Z) : expr := IntLiteral (Z.to_num_int z).
 
-(* Fixpoint denote_expr (e:expr) : itree fpye_event Z :=
+Definition ex1 : expr := Plus (lit 2) (lit 3).
+(* 
+
+Fixpoint denote_expr (e:expr) : itree fpye_event Z :=
     match e with
     | IntLiteral x => Ret (Z.of_num_int x)
     | Plus lhs rhs =>
@@ -64,9 +65,7 @@ Definition result_value (o : outcome MCFGEbot (Res dvalue)) : outcome MCFGEbot d
     | Event X e => Event X e
     end.
 
-Definition lit (z : Z) : expr := IntLiteral (Z.to_num_int z).
 
-Definition ex1 : expr := Plus (lit 2) (lit 3).
 
 Compute run 100 (denote_expr ex1).
 
@@ -106,8 +105,9 @@ Definition build_program_from_instr (i: instr dtyp) (return_type: dtyp) : mcfg d
         df_args := [];
         df_instrs := (entry, [])
     |} in
-    mcfg_of_modul (modul_of_toplevel_entities [TLE_Definition main]).
+    mcfg_of_modul (modul_of_toplevel_entities [TLE_Definition main]). *)
 
+(*
 Definition prog_den : MCFGtop dvalue :=
     denote_vellvm llvm_i64 (Name "main") [] prog.
 
@@ -117,5 +117,6 @@ Definition prog_result : MCFGbot (Res dvalue) :=
 
 Compute result_value (run 1000 prog_result).
 
+*)
 
- *)
+
