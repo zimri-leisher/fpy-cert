@@ -1,5 +1,8 @@
 From FpyCert Require Import syntax.
 From Stdlib Require Import String ZArith Bool Lia List.
+From ExtLib Require Import Structures.Monad Data.Monads.OptionMonad.
+From Vellvm.Numeric Require Import Integers.
+Import MonadNotation.
 Open Scope string_scope.
 Import ListNotations.
 
@@ -7,7 +10,7 @@ Inductive signedness : Type := Signed | Unsigned.
 Inductive int_width : Type := IW8 | IW16 | IW32 | IW64.
 Inductive float_width : Type := FW32 | FW64.
 
-Inductive ty : Type :=
+Variant type_base : Type :=
     | TInt (s : signedness) (w : int_width)
     | TFloat (w : float_width)
     | TBool.
@@ -24,33 +27,36 @@ Notation U64 := (TInt Unsigned IW64).
 Notation F32 := (TFloat FW32).
 Notation F64 := (TFloat FW64).
 
-Definition int_types : list ty := [I8; I16; I32; I64; U8; U16; U32; U64].
+Definition int_types : list type_base := [I8; I16; I32; I64; U8; U16; U32; U64].
 
-Definition float_types : list ty := [F32; F64].
+Definition float_types : list type_base := [F32; F64].
 
-Definition context := string -> option ty.
+Definition context := string -> option type_base.
 
 Open Scope Z_scope.
+Open Scope monad_scope.
 
-Definition int_bits (w : int_width) : Z :=
+Definition int_bits (w : int_width) : positive :=
     match w with IW8 => 8 | IW16 => 16 | IW32 => 32 | IW64 => 64 end.
 
-Definition int_min (s : signedness) (bits : Z) : Z :=
+Coercion Zpos : positive >-> Z.
+
+Definition int_min (s : signedness) (bits : positive) : Z :=
     match s with
         | Unsigned => 0
         | Signed => -(2 ^ (bits - 1))
     end.
 
-Definition int_max (s : signedness) (bits : Z) : Z :=
+Definition int_max (s : signedness) (bits : positive) : Z :=
     match s with
         | Unsigned => 2 ^ bits - 1
         | Signed => 2 ^ (bits - 1) - 1
     end.
 
-Definition float_bits (w : float_width) : Z :=
+Definition float_bits (w : float_width) : positive :=
     match w with FW32 => 32 | FW64 => 64 end.
 
-Definition is_subtype (t1 t2 : ty) : bool :=
+Definition is_subtype (t1 t2 : type_base) : bool :=
     match t1, t2 with
         | TInt s1 w1, TInt s2 w2 => 
             ((int_min s1 (int_bits w1)) >=? (int_min s2 (int_bits w2))) && 
@@ -81,7 +87,7 @@ is that if t1 <: t2, we can put a value of t1 in for wherever t2 is,
 and the program won't get stuck?
 *)
 
-Definition common_type (t1 t2 : ty) : option ty :=
+Definition common_type (t1 t2 : type_base) : option type_base :=
     match t1, t2 with
         | TInt _ _, TInt _ _ => 
             find (fun t => is_subtype t1 t && is_subtype t2 t) int_types
@@ -104,23 +110,25 @@ Definition fact_no_common_type_means_no_supertype : Prop :=
         ~ exists t3, is_subtype t1 t3 = true /\ is_subtype t2 t3 = true.
 
 
-Definition 
+Variant value : Set :=
+    | VInt (s : signedness) (w : int_width) (x: @bit_int (int_bits w))
+    | VF32 (x : Floats.float32)
+    | VF64 (x : Floats.float)
+    | VBool (x : bool).
 
 
-
-Definition ll_float  := Floats.float32.
-Definition ll_double := Floats.float.
-
-    
-    
-
-Fixpoint has_type2 (c : context) (e : expr) (t : ty) : bool :=
+Fixpoint type_of (c : context) (e : expr) : option type_base :=
     match e with
-    | IntLiteral x => t = I64
-    | FloatLiteral y => t = F64
-    | Plus a b => let ct := common_type 
+    | IntLiteral x => Some I64
+    | FloatLiteral y => Some F64
+    | Plus a b => 
+        ty_a <- type_of c a ;;
+        ty_b <- type_of c b ;;
+        common_type ty_a ty_b
+    end.
 
-Inductive has_type : context -> expr -> ty -> Prop :=
+
+(* Inductive has_type : context -> expr -> type_base -> Prop :=
     | T_I64 : forall Gamma x,
         has_type Gamma (IntLiteral x) I64
     | T_F64 : forall Gamma x,
@@ -130,4 +138,5 @@ Inductive has_type : context -> expr -> ty -> Prop :=
         has_type Gamma y t2 ->
         Some t3 = common_type t1 t2 ->
         has_type Gamma (Plus x y) t3.
-        
+
+*)
