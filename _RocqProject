@@ -4,8 +4,8 @@
 
 src/Syntax.v
 src/Typing.v
-src/TypingFacts.v
 src/LLVMBuilder.v
+proof/TypingFacts.v
 proof/VellvmRun.v
 proof/VellvmMem.v
 proof/VellvmMem64.v

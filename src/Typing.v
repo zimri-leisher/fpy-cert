@@ -69,27 +69,6 @@ Definition is_subtype (t1 t2 : typ) : bool :=
         | _, _ => false
     end.
 
-Definition fact_is_subtype_is_reflexive : Prop := 
-    forall t, is_subtype t t = true.
-
-Definition fact_is_subtype_is_transitive : Prop :=
-    forall t1 t2 t3, 
-        is_subtype t1 t2 = true -> 
-        is_subtype t2 t3 = true -> 
-        is_subtype t1 t3 = true.
-
-Definition fact_is_subtype_is_antisymmetric : Prop :=
-    forall t1 t2,
-        is_subtype t1 t2 = true ->
-        is_subtype t2 t1 = true ->
-        t1 = t2.
-
-(*
-How could I state the real desired property of a subtype reln, which
-is that if t1 <: t2, we can put a value of t1 in for wherever t2 is,
-and the program won't get stuck?
-*)
-
 Definition common_type (t1 t2 : typ) : option typ :=
     match t1, t2 with
         | TInt _ _, TInt _ _ => 
@@ -101,38 +80,6 @@ Definition common_type (t1 t2 : typ) : option typ :=
     end.
 
 (*
-Also want to show that common type gives the "least supertype"
-So what is least subtype? i8, u8, what is the least supertype? the subtype with the fewest bits?
-What happens if the type doesn't have a static size? Maybe we just assume it's the bits for now
-*)
-
-Definition fact_common_type_always_smallest_bits_supertype : Prop :=
-    forall t1 t2 t3,
-        common_type t1 t2 = Some t3 ->
-        ~ exists t4, (
-            is_subtype t1 t4 = true /\
-            is_subtype t2 t4 = true
-        ) /\ type_bits t4 <? type_bits t3 = true.
-
-
-Definition fact_common_type_always_supertype : Prop :=
-    forall t1 t2 t3,
-        common_type t1 t2 = Some t3 ->
-        is_subtype t1 t3 = true /\
-        is_subtype t2 t3 = true.
-
-
-Definition fact_no_common_type_means_no_supertype : Prop :=
-    forall t1 t2,
-        common_type t1 t2 = None ->
-        ~ exists t3, is_subtype t1 t3 = true /\ is_subtype t2 t3 = true.
-
-(* TODO is symmetric the right word for this? *)
-Definition fact_common_type_symmetric : Prop :=
-    forall t1 t2,
-        common_type t1 t2 = common_type t2 t1.
-
-(* 
 Variant value : Set :=
     | VInt (s : signedness) (w : int_width) (x: @bit_int (type_bits w))
     | VF32 (x : Floats.float32)
