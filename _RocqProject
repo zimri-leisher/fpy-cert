@@ -1,5 +1,13 @@
 -R vellvm/src/rocq Vellvm
 -Q src FpyCert
+-Q proof FpyCert
 
-src/syntax.v
+src/Syntax.v
 src/Typing.v
+src/TypingFacts.v
+src/LLVMBuilder.v
+proof/VellvmRun.v
+proof/VellvmMem.v
+proof/VellvmMem64.v
+proof/VellvmOps.v
+proof/Bits.v
