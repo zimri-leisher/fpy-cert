@@ -1,44 +1,46 @@
-From Stdlib Require Import ZArith String List.
-From ExtLib Require Import Structures.Maps.
+From Stdlib Require Import ZArith.
 
-From ITree Require Import ITree.
+Inductive Value : Type :=
+    | v_unit : Value
+    | v_bool : bool -> Value
+    | v_int32 : Z -> Value
+    .
 
-From Vellvm Require Import Syntax Utils Params Semantics Interfaces.Memory ParamsV IPtrInfinite.
+Inductive Ty : Set :=
+    | T_Unit : Ty
+    | T_Bool : Ty
+    | T_Int32 : Ty
+    | T_Singleton : Ty -> Value -> Ty
+    | T_Or : Ty -> Ty -> Ty
+    | T_Top : Ty
+    | T_Bot : Ty
+    .
 
-Import ListNotations.
-Open Scope string_scope.
+Variant BinOp : Set :=
+    | BinOp_Add
+    .
 
-#[local] Instance Pa : Params := @ParamsV IPZ IPZTheory.
+Inductive Term : Type :=
+    | t_unit : Term
+    | t_bool : bool -> Term
+    | t_int32 : Z -> Term
+    | t_app : Term -> Term -> Term
+    | t_bin_op : BinOp -> Term -> Term -> Term
+    .
 
-Definition int_syntax := Number.signed_int.
 
-Inductive expr : Set :=
-| IntLiteral (x:int_syntax)
-| Plus (v1:expr) (v2:expr)
-.
+
+
+(* 
 
 Variant fpye_event : Type -> Type :=
 | Overflow : fpye_event void.
 
+
+(* 
 Definition lit (z : Z) : expr := IntLiteral (Z.to_num_int z).
 
-Definition ex1 : expr := Plus (lit 2) (lit 3).
-(* 
-
-Fixpoint denote_expr (e:expr) : itree fpye_event Z :=
-    match e with
-    | IntLiteral x => Ret (Z.of_num_int x)
-    | Plus lhs rhs =>
-    lhs_val <- denote_expr lhs ;;
-    rhs_val <- denote_expr rhs ;;
-    let result := lhs_val + rhs_val in
-    (* Okay, now I want to check if the result is representable in I64*)
-    if Z.leb (- 2 ^ 63) result && Z.leb result ((2 ^ 63) - 1) then
-        Ret result
-    else
-        (* This magic allows us to avoid giving a value to v??*)
-        v <- trigger Overflow ;; match v : void with end
-end.
+Definition ex1 : expr := Plus (lit 2) (lit 3). *)
 
 
 

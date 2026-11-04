@@ -10,7 +10,7 @@ Import ListNotations MonadNotation.
 Open Scope string_scope. Open Scope monad_scope.
 
 
-
+(* 
 Record cg_state := mk_cg_state { cg_next : Z; cg_reversed_code : code dtyp}.
 
 (* monad state to hold codegen info *)
@@ -49,4 +49,6 @@ Definition emit_program (block : LLVMAst.block dtyp) : mcfg dtyp :=
 
 Definition ex1_prog := emit_program ex1_main.
 
-Compute show ex1_prog.
+Compute show ex1_prog. *)
+
+

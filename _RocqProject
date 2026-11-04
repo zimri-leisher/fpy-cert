@@ -3,8 +3,10 @@
 -Q proof FpyCert
 
 src/Syntax.v
+src/Semantics.v
 src/Typing.v
 src/LLVMBuilder.v
+src/Codegen.v
 proof/TypingFacts.v
 proof/VellvmRun.v
 proof/VellvmMem.v
