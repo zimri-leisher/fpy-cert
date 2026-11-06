@@ -1,34 +1,42 @@
 From Stdlib Require Import ZArith.
-From FpyCert Require Import Syntax.
-From ITree Require Import ITree.
+From FpyCert Require Import Syntax State.
+From ITree Require Import ITree Events.State.
+Import ITree.Basics.Basics.Monads.
 
 Import ITreeNotations.
 Local Open Scope itree_scope.
 Local Open Scope Z_scope.
 
-
-Variant FpyEvent : Type -> Type :=
-    | Overflow : FpyEvent void
-    | GetTlm : Z -> FpyEvent Value
-    | TlmNotFound : Z -> FpyEvent void
+Variant PanicE : Type -> Type :=
+    | Overflow : PanicE void
+    | TlmNotFound : Z -> PanicE void
     .
 
-Definition FpyTree : Type := itree FpyEvent Value.
+Variant HostE : Type -> Type :=
+    | GetTlm : Z -> HostE Value
+    .
 
+Definition BaseE := PanicE +' HostE.
 
-Definition eval_bin_op (op: BinOp) (v1 v2: Value) : FpyTree :=
+Definition FinalE := PanicE.
+
+Definition BaseTree : Type := itree BaseE Value.
+
+Definition FinalTree : Type := itree FinalE (tlm_env * Value).
+
+Definition eval_bin_op (op: BinOp) (v1 v2: Value) : BaseTree :=
     match op, v1, v2 with
     | BinOp_Add, v_int32 z1, v_int32 z2 => 
         let res := z1 + z2 in
         if ((res >? 2 ^ 31 - 1) || (res <? - 2 ^ 31))%bool then
-            Vis Overflow (fun x : void => match x with end)
+            vis Overflow (fun x : void => match x with end)
         else
             Ret (v_int32 res)
     | _, _, _ => Ret (v_int32 0)
     end.
 
 
-Fixpoint denote_term (o : Term) : FpyTree :=
+Fixpoint denote_term (o : Term) : BaseTree :=
     match o with
     | t_unit => Ret v_unit
     | t_bool b => Ret (v_bool b)
@@ -42,16 +50,19 @@ Fixpoint denote_term (o : Term) : FpyTree :=
     end.
 
 
-Definition tlm_env := Z -> option Value.
-
-
-Definition handle_fpy_event : forall T, FpyEvent T -> tlm_env -> itree FpyEvent (tlm_env * T) :=
+Definition handler_host : HostE ~> stateT tlm_env (itree FinalE) :=
     fun _ e env =>
         match e with
         | GetTlm z =>
             match env z with
             | Some v => Ret (env, v)
-            | None => Vis (TlmNotFound z) (fun x : void => match x with end)
+            | None => vis (TlmNotFound z) (fun x : void => match x with end)
             end
-        | e' => Vis e' (fun x => Ret (env, x))
         end.
+
+
+Definition handler_base : BaseE ~> stateT tlm_env (itree FinalE) :=
+    case_ pure_state handler_host.
+
+Definition handle_base_events (t : BaseTree) (env : tlm_env) : FinalTree :=
+    interp_state handler_base t env.

@@ -3,7 +3,11 @@
 -Q proof FpyCert
 
 src/Syntax.v
+src/Integers.v
+src/State.v
+src/Denote.v
 src/Semantics.v
+src/Evaluate.v
 src/Typing.v
 src/LLVMBuilder.v
 src/Codegen.v
