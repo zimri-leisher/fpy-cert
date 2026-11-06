@@ -24,8 +24,8 @@ Inductive Term : Type :=
     | t_unit : Term
     | t_bool : bool -> Term
     | t_int32 : Z -> Term
-    | t_app : Term -> Term -> Term
     | t_bin_op : BinOp -> Term -> Term -> Term
+    | t_tlm_ident : Z -> Term
     .
 
 
