@@ -26,21 +26,16 @@ Definition FinalTree : Type := itree FinalE (tlm_env * Value).
 
 Definition eval_bin_op (op: BinOp) (v1 v2: Value) : BaseTree :=
     match op, v1, v2 with
-    | BinOp_Add, v_int32 z1, v_int32 z2 => 
+    | BinOp_Add, v_int z1, v_int z2 => 
         let res := z1 + z2 in
-        if ((res >? 2 ^ 31 - 1) || (res <? - 2 ^ 31))%bool then
-            vis Overflow (fun x : void => match x with end)
-        else
-            Ret (v_int32 res)
-    | _, _, _ => Ret (v_int32 0)
+        Ret (v_int res)
+    | _, _, _ => Ret (v_int 0)
     end.
 
 
 Fixpoint denote_term (o : Term) : BaseTree :=
     match o with
-    | t_unit => Ret v_unit
-    | t_bool b => Ret (v_bool b)
-    | t_int32 z => Ret (v_int32 z)
+    | t_value v => Ret v
     | t_bin_op op t1 t2 =>
         lhs <- denote_term t1 ;;
         rhs <- denote_term t2 ;;
@@ -66,3 +61,4 @@ Definition handler_base : BaseE ~> stateT tlm_env (itree FinalE) :=
 
 Definition handle_base_events (t : BaseTree) (env : tlm_env) : FinalTree :=
     interp_state handler_base t env.
+

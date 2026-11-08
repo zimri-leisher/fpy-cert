@@ -1,10 +1,24 @@
-From FpyCert Require Import Syntax.
-From Stdlib Require Import String ZArith Bool Lia List.
-From ExtLib Require Import Structures.Monad Data.Monads.OptionMonad.
-From Vellvm.Numeric Require Import Integers.
-Import MonadNotation.
-Open Scope string_scope.
-Import ListNotations.
+From FpyCert Require Import Syntax State.
+
+
+Inductive syn_typed (ctx : tlm_ctx) : Term -> Ty -> Prop :=
+    | ST_Unit :
+        syn_typed ctx (t_value v_unit) T_Unit
+    | ST_Bool :
+        forall b, syn_typed ctx (t_value (v_bool b)) T_Bool
+    | ST_Int :
+        forall z, syn_typed ctx (t_value (v_int z)) T_Int
+    | ST_TlmIdent :
+        forall i t,
+        ctx i = Some t ->
+        syn_typed ctx (t_tlm_ident i) t
+    | ST_Selfify :
+        forall v base,
+        syn_typed ctx (t_value v) base ->
+        syn_typed ctx (t_value v) (T_Singleton base v)
+    | ST_BinOp :
+        forall 
+    .
 
 (* Inductive signedness : Type := Signed | Unsigned.
 Inductive int_width : Type := IW8 | IW16 | IW32 | IW64.

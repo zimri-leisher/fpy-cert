@@ -1,7 +1,5 @@
-From Stdlib Require Import List ZArith.
-From FpyCert Require Import Syntax Evaluate State Integers.
-
-Import ListNotations.
+From Stdlib Require Import ZArith.
+From FpyCert Require Import Syntax Evaluate State Integers SyntacticTyping.
 
 Definition SemTy := Value -> Prop.
 
@@ -12,7 +10,7 @@ Definition interp_bool (v : Value) : Prop :=
     exists b, v = v_bool b.
 
 Definition interp_int32 (v : Value) : Prop :=
-    exists z, in_int32_bounds z = true /\ v = v_int32 z.
+    exists z, in_int32_bounds z = true /\ v = v_int z.
 
 Definition interp_singleton (base : SemTy) (s : Value) (v : Value) : Prop :=
     base v /\ s = v.
@@ -29,7 +27,7 @@ Fixpoint syn_to_sem_ty (T : Ty) : SemTy :=
     match T with
     | T_Unit => interp_unit
     | T_Bool => interp_bool
-    | T_Int32 => interp_int32
+    | T_Int => interp_int32
     | T_Singleton base s => interp_singleton (syn_to_sem_ty base) s
     | T_Or a b => interp_or (syn_to_sem_ty a) (syn_to_sem_ty b)
     | T_Top => interp_top
@@ -50,12 +48,6 @@ Definition sem_typed (ctx : tlm_ctx) (t : Term) (ty : Ty) : Prop :=
     forall env,
     env_matches_ctx env ctx ->
     sem_typed_after_evaluation t env (syn_to_sem_ty ty).
-
-Definition env_of (l : list (Z * Value)) : tlm_env :=
-    fun z => option_map snd (find (fun p => (fst p =? z)%Z) l).
-
-Definition ctx_of (l : list (Z * Ty)) : tlm_ctx :=
-    fun z => option_map snd (find (fun p => (fst p =? z)%Z) l).
 
 Definition sem_subtype (a b : Ty) : Prop :=
     forall v, (syn_to_sem_ty a) v -> (syn_to_sem_ty b) v.
