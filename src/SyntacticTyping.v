@@ -1,6 +1,11 @@
 From FpyCert Require Import Syntax State.
 
 
+Definition bin_op_result_type (op : BinOp) (t1 t2 : Ty) : option Ty :=
+    match base_ty t1, base_ty t2 with
+        | _, _ => None
+    end.
+
 Inductive syn_typed (ctx : tlm_ctx) : Term -> Ty -> Prop :=
     | ST_Unit :
         syn_typed ctx (t_value v_unit) T_Unit
@@ -17,7 +22,11 @@ Inductive syn_typed (ctx : tlm_ctx) : Term -> Ty -> Prop :=
         syn_typed ctx (t_value v) base ->
         syn_typed ctx (t_value v) (T_Singleton base v)
     | ST_BinOp :
-        forall 
+        forall o t1 t2 T1 T2 T3,
+        syn_typed ctx t1 T1 ->
+        syn_typed ctx t2 T2 ->
+        bin_op_result_type o T1 T2 = Some T3 ->
+        syn_typed ctx (t_bin_op o t1 t2) T3
     .
 
 (* Inductive signedness : Type := Signed | Unsigned.
