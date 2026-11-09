@@ -17,10 +17,6 @@ Inductive syn_typed (ctx : tlm_ctx) : Term -> Ty -> Prop :=
         forall i t,
         ctx i = Some t ->
         syn_typed ctx (t_tlm_ident i) t
-    | ST_Selfify :
-        forall v base,
-        syn_typed ctx (t_value v) base ->
-        syn_typed ctx (t_value v) (T_Singleton base v)
     | ST_BinOp :
         forall o t1 t2 T1 T2 T3,
         syn_typed ctx t1 T1 ->

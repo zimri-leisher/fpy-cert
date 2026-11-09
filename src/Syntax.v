@@ -25,14 +25,7 @@ Inductive Ty : Set :=
     | T_Int : Ty
     | T_F64 : Ty
     | T_I64 : Ty
-    | T_Singleton : Ty -> Value -> Ty
     | T_Or : Ty -> Ty -> Ty
     | T_Top : Ty
     | T_Bot : Ty
     .
-
-Fixpoint base_ty (t : Ty) : Ty :=
-    match t with
-    | T_Singleton b _ => base_ty b
-    | _ => t
-    end.

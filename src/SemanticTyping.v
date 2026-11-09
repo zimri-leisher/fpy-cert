@@ -28,7 +28,6 @@ Fixpoint syn_to_sem_ty (T : Ty) : SemTy :=
     | T_Unit => interp_unit
     | T_Bool => interp_bool
     | T_Int => interp_int32
-    | T_Singleton base s => interp_singleton (syn_to_sem_ty base) s
     | T_Or a b => interp_or (syn_to_sem_ty a) (syn_to_sem_ty b)
     | T_Top => interp_top
     | T_Bot => interp_bot
