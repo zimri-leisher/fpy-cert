@@ -22,13 +22,13 @@ Variant IllFormedE : Type -> Type :=
     | TypeError : string -> IllFormedE void
     .
 
-Definition BaseE := (PanicE +' IllFormedE) +' HostE.
+Definition AllE := (PanicE +' IllFormedE) +' HostE.
 
-Definition FinalE := PanicE +' IllFormedE.
+Definition RuntimeE := PanicE.
 
-Definition BaseTree : Type := itree BaseE Value.
+Definition UnhandledTree : Type := itree AllE Value.
 
-Definition FinalTree : Type := itree FinalE (tlm_env * Value).
+Definition RuntimeTree : Type := itree RuntimeE (tlm_env * Value).
 
 Definition int_to_i64 (z : Z) : @bit_int 64 :=
     @repr 64 z.
