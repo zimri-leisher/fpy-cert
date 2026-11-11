@@ -19,7 +19,7 @@ Values in Fpy are a specific constructor of the `Term` variant which accepts a `
 t_value (v_unit)
 ```
 
-Syntactic types in Fpy are just a `Ty` variant.
+Syntactic types in Fpy are just a `Ty` variant. The semantic interpretation of a syntactic type is `Value -> Prop`. 
 
 ## Denotational semantics
 Fpy's dynamic semantics are specified in two parts: a denotation in interaction trees of uninterpreted events, and an interpretation of a subset of these events in a host environment.
@@ -42,7 +42,7 @@ There are a few groups of events that Fpy programs can raise currently:
 Note that, on their own, these events have no interpretation. This first step knows nothing about what these events actually do, beyond their input and output types. Also note that if the output type is void, then the continuation is dead code, because no value can be constructed of type void. So events that output void act to end the program.
 
 #### Sub-semantics of interaction trees
-Inside of ITree continuations, the denotation uses the Rocq Stdlib, plus Vellvm's integer and float libraries (which are not specific to LLVM IR). The Vellvm float library in turn uses Flocq, a formalization of IEEE-754 floating point numbers.
+Inside of ITree continuations, the denotation uses the Rocq Stdlib, plus Vellvm's integer and float libraries (which are not necessarily specific to LLVM IR). The Vellvm float library in turn uses Flocq, a formalization of IEEE-754 floating point numbers.
 
 ### Interpretation of events
 
