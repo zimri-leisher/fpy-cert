@@ -28,9 +28,10 @@ Fixpoint syn_to_sem_ty (T : Ty) : SemTy :=
     | T_Unit => interp_unit
     | T_Bool => interp_bool
     | T_Int => interp_int32
-    | T_Or a b => interp_or (syn_to_sem_ty a) (syn_to_sem_ty b)
     | T_Top => interp_top
     | T_Bot => interp_bot
+    | T_Or a b => interp_or (syn_to_sem_ty a) (syn_to_sem_ty b)
+    | T_Singleton base value => interp_singleton (syn_to_sem_ty base) value
     end.
 
 (* If t finishes with value v, then v has type ty*)

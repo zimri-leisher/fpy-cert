@@ -19,9 +19,16 @@ Values in Fpy are a specific constructor of the `Term` variant which accepts a `
 t_value (v_unit)
 ```
 
-Syntactic types in Fpy are just a `Ty` variant. The semantic interpretation of a syntactic type is `Value -> Prop`. 
+Syntactic types in Fpy are just a `Ty` variant.
 
-## Denotational semantics
+
+## Static semantics
+The denotation of a syntactic type is `Value -> Prop`.
+
+The next goals are writing a type checker, and a subtyping relation.
+
+## Dynamic semantics
+
 Fpy's dynamic semantics are specified in two parts: a denotation in interaction trees of uninterpreted events, and an interpretation of a subset of these events in a host environment.
 
 ### Denotation in interaction trees
